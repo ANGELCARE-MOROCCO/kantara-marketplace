@@ -51,3 +51,11 @@ node_modules
 .DS_Store
 tsconfig.tsbuildinfo
 *.log
+
+# Local secrets - never commit
+.env
+.env.local
+.env.*.local
+.env.local.save
+.env.*
+!.env.example
