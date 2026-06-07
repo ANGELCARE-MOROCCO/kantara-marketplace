@@ -4,7 +4,7 @@ import type { Prisma } from "@prisma/client";
 import {
   AlertTriangle,
   BadgeCheck,
-  BriefcaseBusiness,
+  Briefcase,
   Building2,
   ClipboardCheck,
   CreditCard,
@@ -351,12 +351,12 @@ async function getPartnerOperationsData(searchParams?: SearchParams) {
       verifiedRecordsCount: partnerVerifications.filter((record) => record.status === "verified").length,
       pendingVerificationCount: partnerVerifications.filter((record) => ["pending", "under_review", "needs_information"].includes(record.status)).length,
       rejectedVerificationCount: partnerVerifications.filter((record) => record.status === "rejected").length,
-      openDisputesCount: partnerDisputes.filter((caseItem) => !["resolved", "closed"].includes(caseItem.status)).length,
-      highUrgentDisputesCount: partnerDisputes.filter((caseItem) => !["resolved", "closed"].includes(caseItem.status) && ["high", "urgent"].includes(caseItem.priority)).length,
-      handoverIssuesCount: partnerHandovers.filter((task) => task.status === "issue_reported").length,
-      unresolvedHandoversCount: partnerHandovers.filter((task) => !["completed", "cancelled"].includes(task.status)).length,
-      paymentReviewCount: partnerPayments.filter((payment) => ["requires_review", "failed"].includes(payment.status)).length,
-      manualSettlementCount: partnerPayments.filter((payment) => ["manual", "bank_transfer", "cash_to_host"].includes(payment.method)).length,
+      openDisputesCount: partnerDisputes.filter((caseItem: any) => !["resolved", "closed"].includes(caseItem.status)).length,
+      highUrgentDisputesCount: partnerDisputes.filter((caseItem: any) => !["resolved", "closed"].includes(caseItem.status) && ["high", "urgent"].includes(caseItem.priority)).length,
+      handoverIssuesCount: partnerHandovers.filter((task: any) => task.status === "issue_reported").length,
+      unresolvedHandoversCount: partnerHandovers.filter((task: any) => !["completed", "cancelled"].includes(task.status)).length,
+      paymentReviewCount: partnerPayments.filter((payment: any) => ["requires_review", "failed"].includes(payment.status)).length,
+      manualSettlementCount: partnerPayments.filter((payment: any) => ["manual", "bank_transfer", "cash_to_host"].includes(payment.method)).length,
       reservationExposureCount: partnerReservations.length,
     };
     const signals = evaluatePartnerOperations(application, context);
@@ -809,7 +809,7 @@ function ApplicationQualification({ row }: { row: PartnerRow }) {
 function SupplyPortfolio({ row }: { row: PartnerRow }) {
   return (
     <div className="grid gap-3 md:grid-cols-2">
-      {row.properties.length ? row.properties.map((property) => (
+      {row.properties.length ? row.properties.map((property: any) => (
         <LinkedRecordCard key={property.id} type="Supply record" title={property.approvedTitle ?? property.title ?? property.id} subtitle={`${property.city ?? "No city"} · ${property.propertyType ?? "No type"}`} status={property.contentReviewStatus} href={`/admin/property-trust?homeId=${property.id}`} Icon={Home} meta={`${property._count.images} images · ${property.price ? `${property.price} nightly` : "missing pricing"} · ${property._count.Reservation} reservations`} />
       )) : <QueueEmpty label="No supply submitted yet. Request property submission before treating this partner as active supply." />}
     </div>
@@ -819,7 +819,7 @@ function SupplyPortfolio({ row }: { row: PartnerRow }) {
 function QualityGates({ row }: { row: PartnerRow }) {
   return (
     <div className="space-y-3">
-      {row.properties.length ? row.properties.map((property) => (
+      {row.properties.length ? row.properties.map((property: any) => (
         <div key={property.id} className="rounded-lg border bg-white p-4">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
@@ -845,7 +845,7 @@ function VerificationPanel({ row }: { row: PartnerRow }) {
   return (
     <div className="space-y-4">
       <div className="grid gap-3 md:grid-cols-2">
-        {row.verifications.length ? row.verifications.map((verification) => (
+        {row.verifications.length ? row.verifications.map((verification: any) => (
           <LinkedRecordCard key={verification.id} type={verification.entityType === "property" ? "Property verification" : "Partner verification"} title={verification.title} subtitle={`${verification.category.replaceAll("_", " ")} · ${verification.summary ?? "No summary"}`} status={verification.status} href={`/admin/verifications?verificationId=${verification.id}`} Icon={BadgeCheck} />
         )) : <QueueEmpty label="No verification record yet. Partner approval should be backed by authorization/compliance review where applicable." />}
       </div>
@@ -866,7 +866,7 @@ function DemandPanel({ row }: { row: PartnerRow }) {
   return (
     <div className="grid gap-3 md:grid-cols-2">
       {row.reservations.length ? row.reservations.slice(0, 30).map((reservation) => (
-        <LinkedRecordCard key={reservation.id} type="Reservation" title={reservation.listingTitleSnapshot ?? reservation.id} subtitle={`${formatDateTime(reservation.startDate)} → ${formatDateTime(reservation.endDate)} · ${reservation.listingCitySnapshot ?? "No city"}`} status={reservation.bookingStatus} href={`/admin/bookings?bookingId=${reservation.id}`} Icon={BriefcaseBusiness} meta={reservation.totalSnapshot ? formatCurrencyAmount(String(reservation.totalSnapshot), reservation.currencySnapshot) : "No locked total"} />
+        <LinkedRecordCard key={reservation.id} type="Reservation" title={reservation.listingTitleSnapshot ?? reservation.id} subtitle={`${formatDateTime(reservation.startDate)} → ${formatDateTime(reservation.endDate)} · ${reservation.listingCitySnapshot ?? "No city"}`} status={reservation.bookingStatus} href={`/admin/bookings?bookingId=${reservation.id}`} Icon={Briefcase} meta={reservation.totalSnapshot ? formatCurrencyAmount(String(reservation.totalSnapshot), reservation.currencySnapshot) : "No locked total"} />
       )) : <QueueEmpty label="No demand exposure yet. Reservations will appear after guests book partner supply." />}
     </div>
   );
@@ -875,7 +875,7 @@ function DemandPanel({ row }: { row: PartnerRow }) {
 function HandoverPanel({ row }: { row: PartnerRow }) {
   return (
     <div className="grid gap-3 md:grid-cols-2">
-      {row.handovers.length ? row.handovers.map((task) => (
+      {row.handovers.length ? row.handovers.map((task: any) => (
         <LinkedRecordCard key={task.id} type="Handover" title={`${task.taskNumber}: ${task.title}`} subtitle={`${task.type.replaceAll("_", " ")} · ${formatDateTime(task.scheduledFor, "unscheduled")}`} status={task.status} href={`/admin/handover?handoverId=${task.id}`} Icon={KeyRound} />
       )) : <QueueEmpty label="No handover history yet. This is a foundation state until bookings generate field operations tasks." />}
     </div>
@@ -886,7 +886,7 @@ function IncidentPanel({ row }: { row: PartnerRow }) {
   return (
     <div className="space-y-4">
       <div className="grid gap-3 md:grid-cols-2">
-        {row.disputes.length ? row.disputes.map((dispute) => (
+        {row.disputes.length ? row.disputes.map((dispute: any) => (
           <LinkedRecordCard key={dispute.id} type="Incident" title={`${dispute.caseNumber}: ${dispute.title}`} subtitle={`${dispute.type.replaceAll("_", " ")} · ${dispute.priority}`} status={dispute.status} href={`/admin/disputes?disputeId=${dispute.id}`} Icon={ShieldAlert} />
         )) : <QueueEmpty label="No dispute exposure recorded for this partner." />}
       </div>
@@ -906,7 +906,7 @@ function IncidentPanel({ row }: { row: PartnerRow }) {
 function PaymentPanel({ row }: { row: PartnerRow }) {
   return (
     <div className="grid gap-3 md:grid-cols-2">
-      {row.payments.length ? row.payments.map((payment) => (
+      {row.payments.length ? row.payments.map((payment: any) => (
         <LinkedRecordCard key={payment.id} type="Payment" title={formatCurrencyAmount(payment.amount.toString(), payment.currency)} subtitle={`${payment.method} · ${payment.providerOrderId ?? "no provider order"}`} status={payment.status} href={`/admin/payments?paymentId=${payment.id}`} Icon={CreditCard} meta={payment.providerStatus ?? undefined} />
       )) : <QueueEmpty label="No payment or settlement exposure is linked to this partner yet. No payout logic is assumed." />}
     </div>
