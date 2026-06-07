@@ -66,3 +66,6 @@ tsconfig.tsbuildinfo
 .env.*
 .env.local.save
 !.env.example
+
+# Temporary Vercel env import file
+vercel-env.txt
