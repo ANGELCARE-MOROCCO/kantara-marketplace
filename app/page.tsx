@@ -851,6 +851,57 @@ function secondaryButtonClass(dark = false) {
     : "border border-stone-300 bg-white text-stone-950 hover:bg-stone-50";
 }
 
+function getHomepageSectionMediaUrl(section?: HomepageSectionView | null) {
+  const backgroundImageUrl = section?.backgroundImageUrl?.trim();
+  if (backgroundImageUrl) return backgroundImageUrl;
+
+  const imageUrl = section?.imageUrl?.trim();
+  if (imageUrl) return imageUrl;
+
+  return null;
+}
+
+function HomepageSectionMedia({
+  section,
+  dark = false,
+  className,
+  heightClass = "h-72 sm:h-96",
+  priority = false,
+  t,
+}: {
+  section?: HomepageSectionView | null;
+  dark?: boolean;
+  className?: string;
+  heightClass?: string;
+  priority?: boolean;
+  t: Translate;
+}) {
+  const imageUrl = getHomepageSectionMediaUrl(section);
+  if (!imageUrl) return null;
+
+  return (
+    <figure
+      className={cn(
+        "overflow-hidden rounded-md border shadow-lg",
+        heightClass,
+        dark ? "border-white/10 bg-white/[0.06]" : "border-stone-200 bg-white",
+        className
+      )}
+    >
+      <img
+        src={imageUrl}
+        alt={
+          section?.title?.trim() ||
+          section?.eyebrow?.trim() ||
+          t("homepage", "generic.image", "Homepage section image")
+        }
+        className="h-full w-full object-cover"
+        loading={priority ? "eager" : "lazy"}
+      />
+    </figure>
+  );
+}
+
 function renderHomepageSection(
   section: HomepageSectionView,
   context: HomepageRenderContext
@@ -1057,7 +1108,8 @@ function HeroSection({
   t: Translate;
 }) {
   const isCentered = branding.heroAlignment === "center";
-  const showVisual = branding.heroAlignment !== "center";
+  const heroMediaUrl = getHomepageSectionMediaUrl(section);
+  const showVisual = branding.heroAlignment !== "center" && !heroMediaUrl;
 
   return (
     <section
@@ -1066,6 +1118,18 @@ function HeroSection({
         heroThemeClass(branding.themeMode)
       )}
     >
+      {heroMediaUrl ? (
+        <img
+          src={heroMediaUrl}
+          alt={
+            section?.title?.trim() ||
+            t("homepage", "hero.image_alt", "Kantara homepage hero image")
+          }
+          className="absolute inset-0 h-full w-full object-cover"
+          loading="eager"
+        />
+      ) : null}
+      {heroMediaUrl ? <div className="absolute inset-0 bg-stone-950/62" /> : null}
       <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(255,255,255,0.07)_1px,transparent_1px),linear-gradient(180deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:88px_88px] opacity-30" />
       <div className="absolute inset-x-0 bottom-0 h-28 bg-[linear-gradient(180deg,transparent,rgba(255,255,255,1))]" />
 
@@ -1271,6 +1335,12 @@ function SearchCommandSection({
             )}
           </p>
         </div>
+        <HomepageSectionMedia
+          section={section}
+          t={t}
+          heightClass="h-56 sm:h-72"
+          className="mb-4"
+        />
         <HeroSearchCommand
           searchParams={searchParams}
           variant="light"
@@ -1817,6 +1887,12 @@ function MarketplaceIntelligence({
             )}
           </p>
         </div>
+        <HomepageSectionMedia
+          section={section}
+          t={t}
+          heightClass="h-56 sm:h-72"
+          className="mb-4"
+        />
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
           {metricCards.map((card) => {
             const Icon = card.icon;
@@ -1880,6 +1956,8 @@ function DestinationCommandCenter({
           "Browse by city intent, stay style, and operational context without relying on inflated destination counts."
         )
       )}
+    mediaSection={section}
+    mediaT={t}
     >
       <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:auto-rows-fr lg:grid-cols-4">
         {destinationCards.map((destination) => (
@@ -1989,6 +2067,8 @@ function SearchIntentSections({
         )
       )}
       dark
+    mediaSection={section}
+    mediaT={t}
     >
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-5">
         {intentCards.map((intent) => {
@@ -2084,6 +2164,8 @@ function FeaturedVerifiedStays({
           "Every card comes from reviewed public inventory, with graceful media handling when a property is still completing its photo review."
         )
       )}
+    mediaSection={section}
+    mediaT={t}
     >
       {listings.length > 0 ? (
         <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
@@ -2368,6 +2450,8 @@ function ManagedMarketplaceExplanation({
           "The product foundation is built around reviewed partners, structured property data, protected booking terms, and platform-controlled handover paths."
         )
       )}
+    mediaSection={section}
+    mediaT={t}
     >
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-6">
         {managedSteps.map((step, index) => {
@@ -2450,6 +2534,8 @@ function TrustArchitecture({
           "Verification, communication, policies, price safety, and local operations are designed into the journey."
         )
       )}
+    mediaSection={section}
+    mediaT={t}
     >
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {trustCards.map((card) => {
@@ -2527,6 +2613,8 @@ function GuestPartnerSplit({
         )
       )}
       dark
+    mediaSection={section}
+    mediaT={t}
     >
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <AudiencePanel
@@ -2713,6 +2801,8 @@ function MoroccoStandards({
           "Morocco trips depend on city access, cultural context, property type, handover quality, and clear expectations."
         )
       )}
+    mediaSection={section}
+    mediaT={t}
     >
       <div className="grid gap-6 lg:grid-cols-[0.88fr_1.12fr] lg:items-start">
         <div className="rounded-md border border-stone-200 bg-[linear-gradient(135deg,#111827,#064e3b,#78350f)] p-6 text-white shadow-xl">
@@ -2832,27 +2922,35 @@ function PartnerAcquisitionBand({
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            {readinessBadges.map((badge) => {
-              const key = toRegistrySegment(badge);
+          {getHomepageSectionMediaUrl(section) ? (
+            <HomepageSectionMedia
+              section={section}
+              t={t}
+              heightClass="h-full min-h-[280px]"
+            />
+          ) : (
+            <div className="grid grid-cols-2 gap-3">
+              {readinessBadges.map((badge) => {
+                const key = toRegistrySegment(badge);
 
-              return (
-                <div
-                  key={badge}
-                  className="rounded-md border border-stone-200 bg-white p-4 shadow-sm"
-                >
-                  <CheckCircle2 className="h-5 w-5 text-emerald-700" />
-                  <p className="mt-3 text-sm font-semibold text-stone-900">
-                    {t(
-                      "homepage",
-                      `partnerAcquisition.readiness.${key}`,
-                      badge
-                    )}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
+                return (
+                  <div
+                    key={badge}
+                    className="rounded-md border border-stone-200 bg-white p-4 shadow-sm"
+                  >
+                    <CheckCircle2 className="h-5 w-5 text-emerald-700" />
+                    <p className="mt-3 text-sm font-semibold text-stone-900">
+                      {t(
+                        "homepage",
+                        `partnerAcquisition.readiness.${key}`,
+                        badge
+                      )}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     </section>
@@ -2905,6 +3003,8 @@ function GuestMembershipPreview({
           "A preview of future traveler verification and premium privileges, presented without introducing a paid plan."
         )
       )}
+    mediaSection={section}
+    mediaT={t}
     >
       <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
         <div className="rounded-md border border-stone-200 bg-white p-6 shadow-lg">
@@ -2988,6 +3088,13 @@ function FinalCta({
   return (
     <section className="px-4 pb-12 pt-6 sm:px-6 sm:pb-16 lg:px-10">
       <div className="homepage-content mx-auto rounded-md bg-[linear-gradient(135deg,#111827,#064e3b,#7c2d12)] p-6 text-white shadow-2xl shadow-stone-950/20 sm:p-8 lg:p-12">
+        <HomepageSectionMedia
+          section={section}
+          dark
+          t={t}
+          heightClass="h-56 sm:h-80"
+          className="mb-8"
+        />
         <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
           <div>
             <p className="text-sm font-semibold text-emerald-200">
@@ -3279,7 +3386,6 @@ function GenericHomepageSection({
   t: Translate;
 }) {
   const isDark = section.themeStyle === "dark";
-  const imageUrl = section.imageUrl ?? section.backgroundImageUrl;
 
   return (
     <SectionShell
@@ -3311,6 +3417,8 @@ function GenericHomepageSection({
         )
       )}
       dark={isDark}
+      mediaSection={section}
+      mediaT={t}
     >
       <div
         className={cn(
@@ -3318,16 +3426,7 @@ function GenericHomepageSection({
           isDark ? "border-white/10 bg-white/[0.06]" : "border-stone-200 bg-white"
         )}
       >
-        {imageUrl ? (
-          <div
-            className="h-72 bg-cover bg-center"
-            style={{ backgroundImage: `url(${imageUrl})` }}
-            aria-label={
-              section.title ??
-              t("homepage", "generic.image", "Homepage section image")
-            }
-          />
-        ) : null}
+
         <div className="grid gap-6 p-6 lg:grid-cols-[1fr_auto] lg:items-end">
           <div>
             {section.badgeText ? (
@@ -3397,6 +3496,8 @@ function SectionShell({
   children,
   className,
   dark = false,
+  mediaSection,
+  mediaT,
 }: {
   id?: string;
   eyebrow: string;
@@ -3405,6 +3506,8 @@ function SectionShell({
   children: React.ReactNode;
   className?: string;
   dark?: boolean;
+  mediaSection?: HomepageSectionView;
+  mediaT?: Translate;
 }) {
   return (
     <section
@@ -3438,6 +3541,14 @@ function SectionShell({
             {copy}
           </p>
         </div>
+        {mediaSection && mediaT ? (
+          <HomepageSectionMedia
+            section={mediaSection}
+            dark={dark}
+            t={mediaT}
+            className="mb-8 sm:mb-10"
+          />
+        ) : null}
         {children}
       </div>
     </section>
