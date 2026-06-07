@@ -392,61 +392,58 @@ export async function updateHomepageSection(formData: FormData) {
     badgeText: readOptionalString(formData, "badgeText", 120),
   };
 
-  await prisma.$transaction(async (tx) => {
-    await tx.homepageSection.update({
-      where: { id: sectionId },
-      data: {
-        type,
-        title: nextContent.title,
-        eyebrow: nextContent.eyebrow,
-        subtitle: nextContent.subtitle,
-        body: nextContent.body,
-        ctaLabel: nextContent.ctaLabel,
-        ctaHref: safeHref(readOptionalString(formData, "ctaHref", 260), ""),
-        secondaryCtaLabel: nextContent.secondaryCtaLabel,
-        secondaryCtaHref: safeHref(
-          readOptionalString(formData, "secondaryCtaHref", 260),
-          ""
-        ),
-        imageUrl: safeImageUrl(readOptionalString(formData, "imageUrl", 1200)),
-        backgroundImageUrl: safeImageUrl(
-          readOptionalString(formData, "backgroundImageUrl", 1200)
-        ),
-        badgeText: nextContent.badgeText,
-        layoutStyle: readOption(
-          formData,
-          "layoutStyle",
-          LAYOUT_STYLE_OPTIONS,
-          "editorial"
-        ),
-        themeStyle: readOption(
-          formData,
-          "themeStyle",
-          SECTION_THEME_STYLE_OPTIONS,
-          "default"
-        ),
-        spacing: readOption(
-          formData,
-          "spacing",
-          SECTION_SPACING_OPTIONS,
-          "standard"
-        ),
-        alignment: readOption(
-          formData,
-          "alignment",
-          SECTION_ALIGNMENT_OPTIONS,
-          "left"
-        ),
-        metadata: buildSectionMetadata(formData, existing.metadata),
-        isVisible: readBoolean(formData, "isVisible", true),
-      },
-    });
+  await prisma.homepageSection.update({
+    where: { id: sectionId },
+    data: {
+      type,
+      title: nextContent.title,
+      eyebrow: nextContent.eyebrow,
+      subtitle: nextContent.subtitle,
+      body: nextContent.body,
+      ctaLabel: nextContent.ctaLabel,
+      ctaHref: safeHref(readOptionalString(formData, "ctaHref", 260), ""),
+      secondaryCtaLabel: nextContent.secondaryCtaLabel,
+      secondaryCtaHref: safeHref(
+        readOptionalString(formData, "secondaryCtaHref", 260),
+        ""
+      ),
+      imageUrl: safeImageUrl(readOptionalString(formData, "imageUrl", 1200)),
+      backgroundImageUrl: safeImageUrl(
+        readOptionalString(formData, "backgroundImageUrl", 1200)
+      ),
+      badgeText: nextContent.badgeText,
+      layoutStyle: readOption(
+        formData,
+        "layoutStyle",
+        LAYOUT_STYLE_OPTIONS,
+        "editorial"
+      ),
+      themeStyle: readOption(
+        formData,
+        "themeStyle",
+        SECTION_THEME_STYLE_OPTIONS,
+        "default"
+      ),
+      spacing: readOption(
+        formData,
+        "spacing",
+        SECTION_SPACING_OPTIONS,
+        "standard"
+      ),
+      alignment: readOption(
+        formData,
+        "alignment",
+        SECTION_ALIGNMENT_OPTIONS,
+        "left"
+      ),
+      metadata: buildSectionMetadata(formData, existing.metadata),
+      isVisible: readBoolean(formData, "isVisible", true),
+    },
+  });
 
-    await markHomepageSectionTranslationsStale({
-      sectionId,
-      values: nextContent,
-      tx,
-    });
+  await markHomepageSectionTranslationsStale({
+    sectionId,
+    values: nextContent,
   });
 
   revalidateHomepageBuilder();
