@@ -1,0 +1,794 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id String @id @unique
+
+  email                       String                @unique
+  firstName                   String
+  lastName                    String
+  profileImage                String?
+  passwordHash                String                @default("")
+  role                        String                @default("guest_basic")
+  Home                        Home[]
+  Favorite                    Favorite[]
+  Reservation                 Reservation[]
+  Review                      Review[]
+  partnerApplications         PartnerApplication[]  @relation("UserPartnerApplications")
+  reviewedPartnerApplications PartnerApplication[]  @relation("PartnerApplicationReviewer")
+  changedListingPrices        ListingPriceHistory[]
+  listingAuditEvents          ListingAuditEvent[]
+  updatedBrandingRecords      SiteBranding[]
+  updatedCurrencySettings     CurrencySettings[]
+  updatedLocalizationSettings LocalizationSettings[]
+  reviewedListingContents     Home[]                @relation("ListingContentReviewer")
+}
+
+model HomepageSection {
+  id String @id @default(uuid())
+
+  sectionKey String
+  type       String
+
+  title             String?
+  eyebrow           String?
+  subtitle          String?
+  body              String?
+  ctaLabel          String?
+  ctaHref           String?
+  secondaryCtaLabel String?
+  secondaryCtaHref  String?
+  imageUrl          String?
+  backgroundImageUrl String?
+  badgeText         String?
+  layoutStyle       String?
+  themeStyle        String?
+  spacing           String?
+  alignment         String?
+  metadata          String?
+  sortOrder         Int      @default(0)
+  isVisible         Boolean  @default(true)
+  isLocked          Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  assets HomepageAsset[]
+
+  @@index([sortOrder])
+  @@index([type])
+  @@index([isVisible])
+}
+
+model HomepageAsset {
+  id String @id @default(uuid())
+
+  sectionId String?
+  section   HomepageSection? @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+
+  url       String
+  altText   String?
+  type      String?
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([sectionId])
+}
+
+model SiteBranding {
+  id String @id @default(uuid())
+
+  brandName        String?
+  logoUrl          String?
+  logoAltText      String?
+  logoHref         String? @default("/")
+  logoPlacement    String? @default("left")
+  logoSize         String? @default("medium")
+  logoDisplayMode  String? @default("image_text")
+  logoWidth        Int?
+  logoHeight       Int?
+  mobileLogoWidth  Int?
+  mobileLogoHeight Int?
+  showLogo         Boolean @default(true)
+  showBrandName    Boolean @default(true)
+
+  themeMode            String?  @default("premium_dark")
+  heroAlignment        String?  @default("split")
+  heroVisualDensity    String?  @default("clean")
+  contentWidth         String?  @default("standard")
+  buttonStyle          String?  @default("premium")
+  sectionRadius        String?  @default("rounded")
+  showMetricsStrip     Boolean @default(true)
+  showTrustPanels      Boolean @default(true)
+  showFeaturedListings Boolean @default(true)
+  showFooter           Boolean @default(true)
+
+  updatedById String?
+  updatedBy   User?   @relation(fields: [updatedById], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([updatedById])
+}
+
+model Home {
+  id String @id @default(uuid())
+
+  listingStatus  String @default("draft")
+  listingVersion Int    @default(1)
+
+  title        String?
+  description  String?
+  internalName String?
+  partnerSubmittedTitle        String?
+  partnerSubmittedDescription  String?
+  partnerSubmittedNeighborhood String?
+  approvedTitle                String?
+  approvedDescription          String?
+  approvedNeighborhood         String?
+
+  contentReviewStatus            String   @default("draft")
+  contentReviewedById            String?
+  contentReviewedBy              User?    @relation("ListingContentReviewer", fields: [contentReviewedById], references: [id], onDelete: SetNull)
+  contentReviewedAt              DateTime?
+  contentReviewNotes             String?
+  contentRejectionReason         String?
+  contentNeedsChangesReason      String?
+  submittedForReviewAt           DateTime?
+  approvedContentVersion         Int      @default(1)
+  lastApprovedContentChangedAt   DateTime?
+
+  propertyType String?
+  stayType     String?
+  categoryName String?
+
+  city         String?
+  neighborhood String?
+  address      String?
+  country      String? @default("MA")
+  latitude     Float?
+  longitude    Float?
+
+  guests        String?
+  bedrooms      String?
+  bathrooms     String?
+  guestCount    Int?    @map("guests_count")
+  bedroomCount  Int?    @map("bedrooms_count")
+  beds          Int?
+  bathroomCount Int?    @map("bathrooms_count")
+  toilets       Int?
+  floorNumber   Int?
+  sizeSqm       Int?
+
+  photo           String?
+  price           Int?
+  cleaningFee     Int?
+  securityDeposit Int?
+  minimumNights   Int?
+  maximumNights   Int?
+
+  checkInTime                  String?
+  checkOutTime                 String?
+  instantBookAllowed           Boolean   @default(false)
+  platformManagedCommunication Boolean   @default(true)
+  requiresAdminApproval        Boolean   @default(true)
+  adminReviewNotes             String?
+  approvedAt                   DateTime?
+  rejectedAt                   DateTime?
+  lastPriceChangedAt           DateTime?
+  archivedAt                   DateTime?
+  deletedAt                    DateTime?
+  deletionBlockedReason        String?
+  updatedById                  String?
+  statusChangedAt              DateTime?
+  statusChangedById            String?
+  updatedAt                    DateTime  @default(now()) @updatedAt
+
+  Favorite     Favorite[]
+  Reservation  Reservation[]
+  images       HomeImage[]
+  features     HomeFeature[]
+  reviews      Review[]
+  priceHistory ListingPriceHistory[]
+  auditEvents  ListingAuditEvent[]
+
+  addedCategory    Boolean @default(false)
+  addedDescription Boolean @default(false)
+  addedLoaction    Boolean @default(false)
+
+  createdAT DateTime @default(now())
+  User      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+
+  @@index([contentReviewStatus])
+  @@index([contentReviewedById])
+  @@index([submittedForReviewAt])
+}
+
+model HomeImage {
+  id String @id @default(uuid())
+
+  homeId String
+  Home   Home   @relation(fields: [homeId], references: [id], onDelete: Cascade)
+
+  url       String
+  altText   String?
+  sortOrder Int      @default(0)
+  isCover   Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([homeId])
+}
+
+model HomeFeature {
+  id String @id @default(uuid())
+
+  homeId String
+  Home   Home   @relation(fields: [homeId], references: [id], onDelete: Cascade)
+
+  group     String
+  key       String
+  label     String
+  createdAt DateTime @default(now())
+
+  @@unique([homeId, key])
+  @@index([homeId])
+}
+
+model Review {
+  id String @id @default(uuid())
+
+  homeId String
+  Home   Home   @relation(fields: [homeId], references: [id], onDelete: Cascade)
+
+  userId String?
+  User   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  rating              Int
+  cleanlinessRating   Int?
+  accuracyRating      Int?
+  checkInRating       Int?
+  communicationRating Int?
+  locationRating      Int?
+  valueRating         Int?
+  title               String?
+  comment             String?
+  status              String   @default("published")
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([homeId])
+  @@index([userId])
+  @@index([status])
+}
+
+model ListingPriceHistory {
+  id String @id @default(uuid())
+
+  homeId String
+  home   Home   @relation(fields: [homeId], references: [id], onDelete: Cascade)
+
+  changedById String?
+  changedBy   User?   @relation(fields: [changedById], references: [id], onDelete: SetNull)
+
+  oldPrice           Int?
+  newPrice           Int?
+  oldCleaningFee     Int?
+  newCleaningFee     Int?
+  oldSecurityDeposit Int?
+  newSecurityDeposit Int?
+  oldMinimumNights   Int?
+  newMinimumNights   Int?
+  oldMaximumNights   Int?
+  newMaximumNights   Int?
+  reason             String?
+  createdAt          DateTime @default(now())
+
+  @@index([homeId])
+  @@index([changedById])
+  @@index([createdAt])
+}
+
+model ListingAuditEvent {
+  id String @id @default(uuid())
+
+  homeId String?
+  home   Home?   @relation(fields: [homeId], references: [id], onDelete: SetNull)
+
+  actorId String?
+  actor   User?   @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  eventType String
+  message   String?
+  metadata  String?
+  createdAt DateTime @default(now())
+
+  @@index([homeId])
+  @@index([actorId])
+  @@index([eventType])
+  @@index([createdAt])
+}
+
+model Favorite {
+  id String @id @default(uuid())
+
+  User   User?   @relation(fields: [userId], references: [id])
+  userId String?
+  Home   Home?   @relation(fields: [homeId], references: [id])
+  homeId String?
+
+  createAt DateTime @default(now())
+}
+
+model Reservation {
+  id String @id @default(uuid())
+
+  startDate DateTime
+  endDate   DateTime
+  createdAt DateTime @default(now())
+
+  nightlyPriceSnapshot        Int?
+  cleaningFeeSnapshot         Int?
+  securityDepositSnapshot     Int?
+  totalNightsSnapshot         Int?
+  subtotalSnapshot            Int?
+  totalSnapshot               Int?
+  currencySnapshot            String    @default("USD")
+  bookingStatus               String    @default("reserved")
+  listingTitleSnapshot        String?
+  listingCitySnapshot         String?
+  listingPropertyTypeSnapshot String?
+  listingVersionSnapshot      Int?
+  priceLockedAt               DateTime?
+  cancelledAt                 DateTime?
+  completedAt                 DateTime?
+
+  User   User?   @relation(fields: [userId], references: [id])
+  userId String?
+  Home   Home?   @relation(fields: [homeId], references: [id])
+  homeId String?
+}
+
+model PartnerApplication {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation("UserPartnerApplications", fields: [userId], references: [id], onDelete: Cascade)
+
+  status             String   @default("draft")
+  applicantType      String?
+  legalName          String?
+  displayName        String?
+  primaryContactName String?
+  email              String?
+  phone              String?
+  whatsapp           String?
+  preferredLanguage  String?
+  country            String?
+  city               String?
+  operatingCities    String[] @default([])
+  address            String?
+
+  companyName               String?
+  companyRegistrationNumber String?
+  taxIdentifier             String?
+  nationalIdOrPassport      String?
+
+  propertyTypes          String?
+  estimatedPropertyCount Int?
+  currentPortfolioSize   Int?
+  hasExclusiveRights     Boolean @default(false)
+
+  canProvideInvoices          Boolean @default(false)
+  hasPropertyDocuments        Boolean @default(false)
+  hasTourismAuthorization     Boolean @default(false)
+  acceptsPlatformRules        Boolean @default(false)
+  acceptsManagedCommunication Boolean @default(false)
+  acceptsHandoverPolicy       Boolean @default(false)
+  acceptsCommissionModel      Boolean @default(false)
+  payoutPreference            String?
+
+  businessExperience    String?
+  operationalCapacity   String?
+  checkInProcess        String?
+  guestSupportCapacity  String?
+  cleaningProcess       String?
+  maintenanceProcess    String?
+  emergencyContactName  String?
+  emergencyContactPhone String?
+
+  internalRiskLevel      String    @default("unreviewed")
+  readinessScore         Int       @default(0)
+  adminNotes             String?
+  rejectionReason        String?
+  needsInformationReason String?
+  reviewedById           String?
+  reviewedBy             User?     @relation("PartnerApplicationReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
+  reviewedAt             DateTime?
+  submittedAt            DateTime?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([city])
+  @@index([applicantType])
+}
+
+model CurrencyRate {
+  id String @id @default(uuid())
+
+  baseCurrency  String
+  quoteCurrency String
+  rate          Float
+  source        String?
+  sourceDate    DateTime?
+  fetchedAt     DateTime @default(now())
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([baseCurrency])
+  @@index([quoteCurrency])
+  @@index([fetchedAt])
+  @@index([isActive])
+}
+
+model CurrencySettings {
+  id String @id @default(uuid())
+
+  baseCurrency        String   @default("USD")
+  defaultCurrency     String   @default("USD")
+  enabledCurrencies   String
+  autoSyncEnabled     Boolean  @default(false)
+  syncSource          String   @default("frankfurter")
+  lastSyncAt          DateTime?
+  lastSyncStatus      String?
+  lastSyncError       String?
+  roundingMode        String   @default("standard")
+  showOriginalCurrency Boolean @default(false)
+
+  updatedById String?
+  updatedBy   User?   @relation(fields: [updatedById], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([updatedById])
+}
+
+model LocalizationSettings {
+  id String @id @default(uuid())
+
+  baseLanguage         String   @default("en")
+  defaultLanguage      String   @default("en")
+  enabledLanguages     String
+  autoTranslateEnabled Boolean  @default(false)
+  translationSource    String   @default("libretranslate")
+  translationEndpoint  String?
+  lastSyncAt           DateTime?
+  lastSyncStatus       String?
+  lastSyncError        String?
+
+  updatedById String?
+  updatedBy   User?   @relation(fields: [updatedById], references: [id], onDelete: SetNull)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([updatedById])
+}
+
+model TranslationEntry {
+  id String @id @default(uuid())
+
+  key            String
+  namespace      String   @default("common")
+  entityType     String?
+  entityId       String?
+  fieldName      String?
+  baseText       String
+  language       String
+  translatedText String?
+  source         String?
+  status         String   @default("draft")
+  sourceHash     String?
+  lastSyncedAt   DateTime?
+  errorMessage   String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@unique([key, namespace, language])
+  @@index([namespace])
+  @@index([language])
+  @@index([status])
+  @@index([entityType, entityId, fieldName])
+  @@index([language, status])
+  @@index([sourceHash])
+}
+
+model AdminAuditEvent {
+  id String @id @default(uuid())
+
+  actorId    String?
+  module     String
+  action     String
+  targetType String?
+  targetId   String?
+  summary    String
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  @@index([actorId])
+  @@index([module])
+  @@index([action])
+  @@index([targetType, targetId])
+  @@index([createdAt])
+}
+
+model PaymentRecord {
+  id String @id @default(uuid())
+
+  reservationId String?
+  bookingId     String?
+  guestId       String?
+  propertyId    String?
+  partnerId     String?
+
+  amount       Decimal @db.Decimal(12, 2)
+  currency     String
+  baseAmount   Decimal? @db.Decimal(12, 2)
+  baseCurrency String   @default("USD")
+
+  provider                String @default("paypal")
+  providerEnvironment    String
+  providerOrderId        String?
+  providerAuthorizationId String?
+  providerCaptureId      String?
+  providerStatus         String?
+
+  status String @default("draft")
+  method String @default("paypal_card")
+
+  snapshotJson  Json?
+  failureReason String?
+  createdById   String?
+  updatedById   String?
+  capturedAt    DateTime?
+  authorizedAt  DateTime?
+  cancelledAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  events PaymentEvent[]
+
+  @@index([reservationId])
+  @@index([bookingId])
+  @@index([guestId])
+  @@index([propertyId])
+  @@index([partnerId])
+  @@index([status])
+  @@index([providerOrderId])
+  @@index([providerCaptureId])
+  @@index([createdAt])
+}
+
+model PaymentEvent {
+  id String @id @default(uuid())
+
+  paymentRecordId String
+  paymentRecord   PaymentRecord @relation(fields: [paymentRecordId], references: [id], onDelete: Cascade)
+
+  type            String
+  providerEventId String?
+  payload         Json?
+  summary         String
+  createdAt       DateTime @default(now())
+  createdById     String?
+
+  @@index([paymentRecordId])
+  @@index([type])
+  @@index([providerEventId])
+  @@index([createdAt])
+}
+
+model DisputeCase {
+  id String @id @default(uuid())
+
+  caseNumber String @unique
+  type       String
+  status     String @default("open")
+  priority   String @default("medium")
+
+  reservationId   String?
+  paymentRecordId String?
+  propertyId      String?
+  guestId         String?
+  partnerId       String?
+
+  title        String
+  summary      String
+  resolution   String?
+  assignedToId String?
+  createdById  String?
+  updatedById  String?
+  openedAt     DateTime  @default(now())
+  resolvedAt   DateTime?
+  closedAt     DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  events DisputeEvent[]
+
+  @@index([status])
+  @@index([priority])
+  @@index([type])
+  @@index([reservationId])
+  @@index([paymentRecordId])
+  @@index([propertyId])
+  @@index([guestId])
+  @@index([partnerId])
+  @@index([createdAt])
+}
+
+model DisputeEvent {
+  id String @id @default(uuid())
+
+  disputeCaseId String
+  disputeCase   DisputeCase @relation(fields: [disputeCaseId], references: [id], onDelete: Cascade)
+
+  type        String
+  message     String
+  payload     Json?
+  createdById String?
+  createdAt   DateTime @default(now())
+
+  @@index([disputeCaseId])
+  @@index([type])
+  @@index([createdAt])
+}
+
+model VerificationRecord {
+  id String @id @default(uuid())
+
+  entityType String
+  entityId   String
+  category   String
+  status     String @default("pending")
+
+  title           String
+  summary         String?
+  evidenceSummary String?
+  reviewedById    String?
+  createdById     String?
+  updatedById     String?
+  reviewedAt      DateTime?
+  expiresAt       DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  events VerificationEvent[]
+
+  @@index([entityType, entityId])
+  @@index([status])
+  @@index([category])
+  @@index([createdAt])
+}
+
+model VerificationEvent {
+  id String @id @default(uuid())
+
+  verificationRecordId String
+  verificationRecord   VerificationRecord @relation(fields: [verificationRecordId], references: [id], onDelete: Cascade)
+
+  type        String
+  message     String
+  payload     Json?
+  createdById String?
+  createdAt   DateTime @default(now())
+
+  @@index([verificationRecordId])
+  @@index([type])
+  @@index([createdAt])
+}
+
+model PremiumGuestProfile {
+  id String @id @default(uuid())
+
+  userId String @unique
+  status String @default("candidate")
+
+  eligibilityScore  Int    @default(0)
+  riskLevel         String @default("low")
+  preferredCurrency String?
+  preferredLanguage String?
+  travelStyle       String?
+  notes             String?
+  reviewedById      String?
+  reviewedAt        DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  events PremiumGuestEvent[]
+
+  @@index([status])
+  @@index([riskLevel])
+  @@index([createdAt])
+}
+
+model PremiumGuestEvent {
+  id String @id @default(uuid())
+
+  premiumGuestProfileId String
+  premiumGuestProfile   PremiumGuestProfile @relation(fields: [premiumGuestProfileId], references: [id], onDelete: Cascade)
+
+  type        String
+  message     String
+  payload     Json?
+  createdById String?
+  createdAt   DateTime @default(now())
+
+  @@index([premiumGuestProfileId])
+  @@index([type])
+  @@index([createdAt])
+}
+
+model HandoverTask {
+  id String @id @default(uuid())
+
+  taskNumber String @unique
+
+  reservationId String?
+  propertyId    String?
+  guestId       String?
+  partnerId     String?
+
+  type     String
+  status   String @default("not_scheduled")
+  priority String @default("medium")
+
+  scheduledFor DateTime?
+  completedAt  DateTime?
+  title        String
+  summary      String?
+  checklist    Json?
+  createdById  String?
+  assignedToId String?
+  updatedById  String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  events HandoverEvent[]
+
+  @@index([reservationId])
+  @@index([propertyId])
+  @@index([guestId])
+  @@index([partnerId])
+  @@index([status])
+  @@index([priority])
+  @@index([scheduledFor])
+  @@index([createdAt])
+}
+
+model HandoverEvent {
+  id String @id @default(uuid())
+
+  handoverTaskId String
+  handoverTask   HandoverTask @relation(fields: [handoverTaskId], references: [id], onDelete: Cascade)
+
+  type        String
+  message     String
+  payload     Json?
+  createdById String?
+  createdAt   DateTime @default(now())
+
+  @@index([handoverTaskId])
+  @@index([type])
+  @@index([createdAt])
+}

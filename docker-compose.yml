@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  myapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - ./.env
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./:/usr/src/app
+      - /usr/src/app/node_modules
+    networks:
+      - app-network
+    image: harshit2004h/airbnb-clone:latest
+
+networks:
+  app-network:
+    driver: bridge

@@ -1,0 +1,79 @@
+[
+  {
+    "id": "kp_dbca19f9f7df4875a1c48786835d2351",
+    "email": "emma.jones@homespace.com",
+    "firstName": "Emma",
+    "lastName": "Jones",
+    "profileImage": "https://randomuser.me/api/portraits/women/44.jpg"
+  },
+  {
+    "id": "kp_45e569f152814617a2d27c247432211a",
+    "email": "liam.martin@homespace.com",
+    "firstName": "Liam",
+    "lastName": "Martin",
+    "profileImage": "https://randomuser.me/api/portraits/men/22.jpg"
+  },
+  {
+    "id": "kp_dc7fa7892c9d4a4681480c1fe11a54c3",
+    "email": "olivia.smith@homespace.com",
+    "firstName": "Olivia",
+    "lastName": "Smith",
+    "profileImage": "https://randomuser.me/api/portraits/women/68.jpg"
+  },
+  {
+    "id": "kp_5a077504822545b69a44f27f2f23301f",
+    "email": "noah.james@homespace.com",
+    "firstName": "Noah",
+    "lastName": "James",
+    "profileImage": "https://randomuser.me/api/portraits/men/31.jpg"
+  },
+  {
+    "id": "kp_12200755ccc64790821c593a97faa624",
+    "email": "ava.williams@homespace.com",
+    "firstName": "Ava",
+    "lastName": "Williams",
+    "profileImage": "https://randomuser.me/api/portraits/women/32.jpg"
+  },
+  {
+    "id": "kp_8ca15e5a9b894fc1a6ca78f61aaa1b86",
+    "email": "william.johnson@homespace.com",
+    "firstName": "William",
+    "lastName": "Johnson",
+    "profileImage": "https://randomuser.me/api/portraits/men/45.jpg"
+  },
+  {
+    "id": "kp_0016c4f60ef34a9eb5269302b6659b0f",
+    "email": "sophia.davis@homespace.com",
+    "firstName": "Sophia",
+    "lastName": "Davis",
+    "profileImage": "https://randomuser.me/api/portraits/women/26.jpg"
+  },
+  {
+    "id": "kp_aa7c7f8ac6764baeb96fb055bbefcb59",
+    "email": "james.miller@homespace.com",
+    "firstName": "James",
+    "lastName": "Miller",
+    "profileImage": "https://randomuser.me/api/portraits/men/54.jpg"
+  },
+  {
+    "id": "kp_abc8b73296c54f8ca1acfd8655a3dd7e",
+    "email": "isabella.moore@homespace.com",
+    "firstName": "Isabella",
+    "lastName": "Moore",
+    "profileImage": "https://randomuser.me/api/portraits/women/37.jpg"
+  },
+  {
+    "id": "kp_f0e585d24aed4397b3a14bc5a9e2ea36",
+    "email": "benjamin.clark@homespace.com",
+    "firstName": "Benjamin",
+    "lastName": "Clark",
+    "profileImage": "https://randomuser.me/api/portraits/men/39.jpg"
+  },
+  {
+    "id": "kp_f794a25fb41d4ef2ae90a7fc67370ab3",
+    "email": "bob.builder@homespace.com",
+    "firstName": "Bob",
+    "lastName": "Builder",
+    "profileImage": "https://randomuser.me/api/portraits/men/99.jpg"
+  }
+]

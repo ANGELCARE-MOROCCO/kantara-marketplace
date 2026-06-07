@@ -1,0 +1,54 @@
+{
+  "name": "airbnb-clone",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "i18n:audit": "node scripts/audit-i18n-coverage.mjs",
+    "postinstall": "if [ \"$SKIP_PRISMA_GENERATE\" != \"true\" ]; then npx prisma generate --schema=prisma/schema.prisma; else echo 'Skipping prisma generate'; fi"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.9.1",
+    "@radix-ui/react-dialog": "^1.0.5",
+    "@radix-ui/react-dropdown-menu": "^2.0.6",
+    "@radix-ui/react-label": "^2.0.2",
+    "@radix-ui/react-popover": "^1.1.14",
+    "@radix-ui/react-select": "^2.0.0",
+    "@radix-ui/react-separator": "^1.0.3",
+    "@radix-ui/react-slot": "^1.0.2",
+    "@supabase/supabase-js": "^2.39.6",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.0",
+    "leaflet": "^1.9.4",
+    "lucide-react": "^0.325.0",
+    "next": "14.2.25",
+    "react": "^18",
+    "react-date-range": "^2.0.0-alpha.4",
+    "react-dom": "^18",
+    "react-leaflet": "^4.2.1",
+    "tailwind-merge": "^2.2.1",
+    "tailwindcss-animate": "^1.0.7",
+    "world-countries": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/leaflet": "^1.9.8",
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-date-range": "^1.4.9",
+    "@types/react-dom": "^18",
+    "autoprefixer": "^10.0.1",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.25",
+    "postcss": "^8",
+    "prisma": "^5.9.1",
+    "tailwindcss": "^3.3.0",
+    "tsx": "^4.19.4",
+    "typescript": "^5"
+  },
+  "prisma": {
+    "schema": "prisma/schema.prisma"
+  }
+}
