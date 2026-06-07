@@ -59,3 +59,10 @@ tsconfig.tsbuildinfo
 .env.local.save
 .env.*
 !.env.example
+
+# Local secrets - never commit
+.env
+.env.local
+.env.*
+.env.local.save
+!.env.example
